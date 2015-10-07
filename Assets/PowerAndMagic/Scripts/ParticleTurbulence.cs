@@ -8,8 +8,11 @@ namespace DeerCat
 	[ExecuteInEditMode]
 	public class ParticleTurbulence : MonoBehaviour
 	{
+		[Tooltip("Frequency of the turbulence field")]
 		public float frequency = 0.5f;
+		[Tooltip("Amount particles are affected by turbulence")]
 		public float amplitude = 10.0f;
+		[Tooltip("Speed at which the turbulence field changes over time")]
 		public float evolutionSpeed = 1.0f;
 
 		private ParticleSystem system;
@@ -30,6 +33,7 @@ namespace DeerCat
 
 			if (system.isPlaying)
 			{
+				// update the position of all particles
 				int particleCount = system.GetParticles(particles);
 
 				UpdateParticles(particles, particleCount);
@@ -69,8 +73,11 @@ namespace DeerCat
 		float time = Time.time;
 #endif
 
+			// offset the turbulence field over time, so the turbulence animates
 			Vector3 animOffset = evolutionSpeed * time * Vector3.one;
 			float speed = amplitude * dT;
+
+			// loop over all particles and update their positions
 			for (int i = 0; i < particleCount; ++i)
 			{
 				ParticleSystem.Particle particle = particles[i];
@@ -78,6 +85,7 @@ namespace DeerCat
 
 				Vector3 noiseP = (pos + animOffset) * frequency;
 
+				// calculate the value of the turbulence field at the particle position, and update the particle accordingly
 				pos.x += speed * (Mathf.PerlinNoise(noiseP.y, noiseP.z) - 0.5f);
 				pos.y += speed * (Mathf.PerlinNoise(noiseP.z, noiseP.x) - 0.5f);
 				pos.z += speed * (Mathf.PerlinNoise(noiseP.x, noiseP.y) - 0.5f);
